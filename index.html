@@ -550,12 +550,22 @@
         let physicsChapters = JSON.parse(localStorage.getItem('physicsChapters')) || [];
         let mathChapters = JSON.parse(localStorage.getItem('mathChapters')) || [];
         let informaticsChapters = JSON.parse(localStorage.getItem('informaticsChapters')) || [];
+
+        // Initialize creationDate for old entries if missing
+        [physicsChapters, mathChapters, informaticsChapters].forEach(chapterList => {
+            chapterList.forEach(chapter => {
+                if (!chapter.creationDate) {
+                    chapter.creationDate = new Date().toISOString();
+                }
+            });
+        });
         
         let currentSubject = 'physics';
         let chapters = physicsChapters;
         
         let completedReviews = parseInt(localStorage.getItem('completedReviews')) || 0;
         let simulatedCurrentDate = new Date(); // Simulyasiya üçün tarix
+        simulatedCurrentDate.setHours(0, 0, 0, 0); // Set to start of the day
         
         const reviewIntervals = [3, 7, 14, 30, 60]; // günlər
         
@@ -643,11 +653,12 @@
                 id: Date.now(),
                 name: chapterName,
                 number: chapterNumber,
-                addedDate: simulatedCurrentDate.toISOString(),
+                subject: subject,
                 reviewLevel: 0,
                 nextReviewDate: simulatedCurrentDate.toISOString(),
                 lastReviewDate: null,
-                isCompleted: false
+                isCompleted: false,
+                creationDate: new Date().toISOString() // Add creation date
             };
             
             subjectChapters.push(newChapter);
@@ -673,11 +684,11 @@
         
         function updateStats() {
             const todayTasks = chapters.filter(ch => 
-                !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate))
+                !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate) > 0)
             ).length;
             
             const overdueItems = chapters.filter(ch => 
-                !ch.isCompleted && isOverdue(ch.nextReviewDate)
+                !ch.isCompleted && isOverdue(ch.nextReviewDate) > 0
             ).length;
             
             const statsMap = {
@@ -712,7 +723,7 @@
             const todayTasksListId = `${currentSubject}TodayTasksList`;
             const todayTasksList = document.getElementById(todayTasksListId);
             const todayTasks = chapters.filter(ch => 
-                !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate))
+                !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate) > 0)
             );
             
             if (todayTasks.length === 0) {
@@ -729,13 +740,21 @@
                 <div class="task-item">
                     <div class="task-info">
                         <div class="task-name">Bölmə ${chapter.number}: ${chapter.name}</div>
-                        <div class="task-type">${getReviewTypeText(chapter.reviewLevel)} ${isOverdue(chapter.nextReviewDate) ? '(GECİKMİŞ)' : ''}</div>
+                        <div class="task-type">${getReviewTypeText(chapter.reviewLevel)} ${isOverdue(chapter.nextReviewDate) > 0 ? `(GECİKMİŞ ${isOverdue(chapter.nextReviewDate)} gün)` : ''}</div>
                     </div>
                     <button class="btn btn-success" onclick="completeReview(${chapter.id})">
                         ✅ Tamamlandı
                     </button>
                 </div>
             `).join('');
+        }
+        
+        function formatNextReviewDateShort(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear(); // Use full 4-digit year
+            return `${day}.${month}.${year}`;
         }
         
         function updateChaptersGrid() {
@@ -754,7 +773,8 @@
             
             chaptersGrid.innerHTML = chapters.map(chapter => {
                 const nextReviewText = formatDate(chapter.nextReviewDate);
-                const isOverdueChapter = isOverdue(chapter.nextReviewDate);
+                const nextReviewDateShort = formatNextReviewDateShort(chapter.nextReviewDate);
+                const isOverdueChapter = isOverdue(chapter.nextReviewDate) > 0;
                 const progressPercent = chapter.reviewLevel * 20;
                 
                 return `
@@ -775,8 +795,16 @@
                                 </span>
                             </div>
                             <div class="status-item">
+                                <span class="status-label">Sonrakı Təkrar Tarixi:</span>
+                                <span class="status-value">${nextReviewDateShort}</span>
+                            </div>
+                            <div class="status-item">
                                 <span class="status-label">Hazırki İrəliləyiş:</span>
                                 <span class="status-value">${Math.round(progressPercent)}%</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Əlavə Edilmə Tarixi:</span>
+                                <span class="status-value">${formatCreationDate(chapter.creationDate)}</span>
                             </div>
                             ${chapter.isCompleted ? 
                                 '<div style="text-align: center; color: #28a745; font-weight: bold; margin-top: 10px;">✅ Tamamlandı</div>' : 
@@ -851,12 +879,19 @@
         }
         
         function formatDate(dateString) {
+            const overdueDays = isOverdue(dateString);
+            if (overdueDays > 0) {
+                return `${overdueDays} gün gecikmiş`;
+            }
+
             const date = new Date(dateString);
-            const diffDays = Math.ceil((date - simulatedCurrentDate) / (1000 * 60 * 60 * 24));
-            
-            if (diffDays < 0) {
-                return `${Math.abs(diffDays)} gün gecikmiş`;
-            } else if (diffDays === 0) {
+            date.setHours(0, 0, 0, 0); // Normalize to start of the day
+            const simulatedDate = new Date(simulatedCurrentDate);
+            simulatedDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+
+            const diffDays = Math.floor((date - simulatedDate) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) {
                 return 'Bu gün';
             } else if (diffDays === 1) {
                 return 'Sabah';
@@ -869,19 +904,40 @@
         
         function isOverdue(dateString) {
             const date = new Date(dateString);
-            return date < simulatedCurrentDate;
+            date.setHours(0, 0, 0, 0); // Normalize the date to start of the day
+            const diffDays = Math.ceil((simulatedCurrentDate - date) / (1000 * 60 * 60 * 24));
+            return diffDays > 0 ? diffDays : 0;
         }
-        
+
         function isTodayTask(dateString) {
             const date = new Date(dateString);
-            return date.toDateString() === simulatedCurrentDate.toDateString();
+            date.setHours(0, 0, 0, 0); // Normalize the date to start of the day
+            return date.getTime() === simulatedCurrentDate.getTime();
         }
         
         function getReviewTypeText(level) {
             const types = ['İlk Təkrar', '2. Təkrar', '3. Təkrar', '4. Təkrar', 'Tamamlandı'];
             return types[level - 1] || 'Öyrənildi';
         }
-        
+
+        function formatCreationDate(dateString) {
+            if (!dateString) return 'Məlumat yoxdur'; // Handle cases where creationDate might be missing
+            const date = new Date(dateString);
+            // Check for invalid date to prevent displaying "Invalid Date"
+            if (isNaN(date.getTime())) {
+                return 'Yanlış Tarix';
+            }
+            
+            // Custom formatting to dd.mm.yyyy HH:mm
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear(); // Use full 4-digit year
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            
+            return `${day}.${month}.${year} ${hours}:${minutes}`;
+        }
+
         // Enter tuşu ile bölüm ekleme
         document.getElementById('physicsChapterName').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
