@@ -1036,40 +1036,53 @@
 
         function clearAllData() {
             // Show a confirmation dialog
-            const confirmClear = confirm('DİQQƏT: Bütün məlumatları silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz!');
+            const confirmClear = confirm(`DİQQƏT: ${getCurrentSubjectName()} fənni üçün bütün məlumatları silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz!`);
             
             if (confirmClear) {
-                // Clear localStorage for all subjects
-                localStorage.removeItem('physicsChapters');
-                localStorage.removeItem('mathChapters');
-                localStorage.removeItem('informaticsChapters');
+                // Clear localStorage for current subject
+                switch(currentSubject) {
+                    case 'physics':
+                        localStorage.removeItem('physicsChapters');
+                        localStorage.removeItem('physicsCompletedReviews');
+                        physicsChapters = [];
+                        physicsCompletedReviews = 0;
+                        break;
+                    case 'math':
+                        localStorage.removeItem('mathChapters');
+                        localStorage.removeItem('mathCompletedReviews');
+                        mathChapters = [];
+                        mathCompletedReviews = 0;
+                        break;
+                    case 'informatics':
+                        localStorage.removeItem('informaticsChapters');
+                        localStorage.removeItem('informaticsCompletedReviews');
+                        informaticsChapters = [];
+                        informaticsCompletedReviews = 0;
+                        break;
+                }
                 
-                // Clear completed reviews for each subject
-                localStorage.removeItem('physicsCompletedReviews');
-                localStorage.removeItem('mathCompletedReviews');
-                localStorage.removeItem('informaticsCompletedReviews');
-                
-                // Reset in-memory variables
-                physicsChapters = [];
-                mathChapters = [];
-                informaticsChapters = [];
-                
-                physicsCompletedReviews = 0;
-                mathCompletedReviews = 0;
-                informaticsCompletedReviews = 0;
-                
-                // Reset current subject to physics
-                currentSubject = 'physics';
-                chapters = physicsChapters;
+                // Reset chapters for current subject
+                chapters = [];
                 
                 // Update display to show empty state
                 updateDisplay();
                 
                 // Optional: Provide feedback
-                alert('Bütün məlumatlar uğurla silindi. Səhifə yenidən yüklənir...');
-                
-                // Optional: Reload the page to ensure a clean state
-                location.reload();
+                alert(`${getCurrentSubjectName()} fənni üçün bütün məlumatlar uğurla silindi.`);
+            }
+        }
+
+        // Helper function to get current subject name in Azerbaijani
+        function getCurrentSubjectName() {
+            switch(currentSubject) {
+                case 'physics':
+                    return 'Fizika';
+                case 'math':
+                    return 'Riyaziyyat';
+                case 'informatics':
+                    return 'İnformatika';
+                default:
+                    return 'Fənn';
             }
         }
     </script>
