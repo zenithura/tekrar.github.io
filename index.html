@@ -149,6 +149,13 @@
             opacity: 0.8;
         }
 
+        .task-subject {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
         .chapters-grid {
             display: grid;
             grid-template-columns: 1fr; /* Single column on mobile */
@@ -358,28 +365,45 @@
 
         /* Tab Styles */
         .tab-container {
-            display: flex;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+        }
+
+        .tab-row {
+            display: flex;
         }
         
         .tab {
             flex: 1;
-            padding: 15px;
+            min-width: 120px;
+            padding: 15px 10px;
             text-align: center;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
+            transition: background-color 0.3s;
+            font-size: 0.9rem;
+            border: none;
+            background: transparent;
         }
         
         .tab:hover {
             background: rgba(255,255,255,0.1);
         }
         
-        .tab.active {
-            border-bottom-color: white;
+        .subject-tabs .tab.active {
             background: rgba(255,255,255,0.2);
+        }
+
+        .time-tabs .tab.active {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .subject-tabs {
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .time-tabs {
+            background: rgba(0,0,0,0.1);
         }
         
         .subject-content {
@@ -388,6 +412,23 @@
         
         .subject-content.active {
             display: block;
+        }
+
+        /* Responsive tab layout */
+        @media (max-width: 768px) {
+            .tab {
+                font-size: 0.8rem;
+                padding: 12px 8px;
+                min-width: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tab {
+                font-size: 0.7rem;
+                padding: 10px 6px;
+                min-width: 80px;
+            }
         }
     </style>
 </head>
@@ -399,13 +440,84 @@
         </div>
         
         <div class="tab-container">
-            <div class="tab active" data-subject="physics">Fizika</div>
-            <div class="tab" data-subject="math">Riyaziyyat</div>
-            <div class="tab" data-subject="informatics">İnformatika</div>
+            <div class="tab-row subject-tabs">
+                <div class="tab" data-subject="physics">Fizika</div>
+                <div class="tab" data-subject="math">Riyaziyyat</div>
+                <div class="tab" data-subject="informatics">İnformatika</div>
+            </div>
+            <div class="tab-row time-tabs">
+                <div class="tab active" data-subject="today-all">Bugün</div>
+                <div class="tab" data-subject="tomorrow-all">Sabah</div>
+            </div>
         </div>
         
         <div class="main-content">
-            <div id="physics-content" class="subject-content active">
+            <!-- Today's Tasks Across All Subjects -->
+            <div id="today-all-content" class="subject-content active">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="allTodayTasks">0</div>
+                        <div class="stat-label">Bu Günkü Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allOverdueItems">0</div>
+                        <div class="stat-label">Gecikmiş Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allTotalChapters">0</div>
+                        <div class="stat-label">Toplam Bölmələr</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allCompletedReviews">0</div>
+                        <div class="stat-label">Toplam Təkrarlar</div>
+                    </div>
+                </div>
+
+                <div class="today-tasks">
+                    <h2>📅 Bugünkü Bütün Tapşırıqlarınız</h2>
+                    <div class="task-list" id="allTodayTasksList">
+                        <div class="empty-state">
+                            <h3>Bu gün üçün tapşırıq yoxdur! 🎉</h3>
+                            <p>Əla! Bu gün üçün bütün təkrarlarınızı tamamladınız.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tomorrow's Tasks Across All Subjects -->
+            <div id="tomorrow-all-content" class="subject-content">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="allTomorrowTasks">0</div>
+                        <div class="stat-label">Sabahkı Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allUpcomingTasks">0</div>
+                        <div class="stat-label">Gələcək Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allTotalChapters2">0</div>
+                        <div class="stat-label">Toplam Bölmələr</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allCompletedReviews2">0</div>
+                        <div class="stat-label">Toplam Təkrarlar</div>
+                    </div>
+                </div>
+
+                <div class="today-tasks">
+                    <h2>📅 Sabahkı Bütün Tapşırıqlarınız</h2>
+                    <div class="task-list" id="allTomorrowTasksList">
+                        <div class="empty-state">
+                            <h3>Sabah üçün tapşırıq yoxdur! 🎉</h3>
+                            <p>Sabah üçün heç bir təkrar planlanmayıb.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Physics Content -->
+            <div id="physics-content" class="subject-content">
                 <div class="controls">
                     <div class="input-group">
                         <input type="text" id="physicsChapterName" placeholder="Fizika bölmənin adı (məs: Elektrostatika)">
@@ -451,6 +563,7 @@
                 </div>
             </div>
 
+            <!-- Math Content -->
             <div id="math-content" class="subject-content">
                 <div class="controls">
                     <div class="input-group">
@@ -497,6 +610,7 @@
                 </div>
             </div>
 
+            <!-- Informatics Content -->
             <div id="informatics-content" class="subject-content">
                 <div class="controls">
                     <div class="input-group">
@@ -590,8 +704,8 @@
             });
         });
         
-        let currentSubject = 'physics';
-        let chapters = physicsChapters;
+        let currentSubject = 'today-all';
+        let chapters = [];
         
         let simulatedCurrentDate = new Date(); // Simulyasiya üçün tarix
         simulatedCurrentDate.setHours(0, 0, 0, 0); // Set to start of the day
@@ -602,6 +716,11 @@
             'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun',
             'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'
         ];
+
+        // Get all chapters from all subjects
+        function getAllChapters() {
+            return [...physicsChapters, ...mathChapters, ...informaticsChapters];
+        }
         
         // Tab switching functionality
         document.querySelectorAll('.tab').forEach(tab => {
@@ -627,6 +746,10 @@
                     case 'informatics':
                         chapters = informaticsChapters;
                         break;
+                    case 'today-all':
+                    case 'tomorrow-all':
+                        chapters = getAllChapters();
+                        break;
                 }
                 
                 // Refresh display
@@ -635,20 +758,12 @@
         });
         
         function saveData() {
-            switch(currentSubject) {
-                case 'physics':
-                    localStorage.setItem('physicsChapters', JSON.stringify(physicsChapters));
-                    localStorage.setItem('physicsCompletedReviews', physicsCompletedReviews);
-                    break;
-                case 'math':
-                    localStorage.setItem('mathChapters', JSON.stringify(mathChapters));
-                    localStorage.setItem('mathCompletedReviews', mathCompletedReviews);
-                    break;
-                case 'informatics':
-                    localStorage.setItem('informaticsChapters', JSON.stringify(informaticsChapters));
-                    localStorage.setItem('informaticsCompletedReviews', informaticsCompletedReviews);
-                    break;
-            }
+            localStorage.setItem('physicsChapters', JSON.stringify(physicsChapters));
+            localStorage.setItem('physicsCompletedReviews', physicsCompletedReviews);
+            localStorage.setItem('mathChapters', JSON.stringify(mathChapters));
+            localStorage.setItem('mathCompletedReviews', mathCompletedReviews);
+            localStorage.setItem('informaticsChapters', JSON.stringify(informaticsChapters));
+            localStorage.setItem('informaticsCompletedReviews', informaticsCompletedReviews);
         }
         
         function addChapter(subject) {
@@ -689,7 +804,7 @@
                 nextReviewDate: simulatedCurrentDate.toISOString(),
                 lastReviewDate: null,
                 isCompleted: false,
-                creationDate: new Date().toISOString() // Add creation date
+                creationDate: new Date().toISOString()
             };
             
             subjectChapters.push(newChapter);
@@ -698,9 +813,11 @@
             document.getElementById(nameInputId).value = '';
             document.getElementById(numberInputId).value = '';
             
-            // Update current chapters if the subject matches
+            // Update current chapters if needed
             if (currentSubject === subject) {
                 chapters = subjectChapters;
+            } else if (currentSubject === 'today-all' || currentSubject === 'tomorrow-all') {
+                chapters = getAllChapters();
             }
             
             saveData();
@@ -708,9 +825,165 @@
         }
         
         function updateDisplay() {
-            updateStats();
-            updateTodayTasks();
-            updateChaptersGrid();
+            if (currentSubject === 'today-all') {
+                updateAllTodayDisplay();
+            } else if (currentSubject === 'tomorrow-all') {
+                updateAllTomorrowDisplay();
+            } else {
+                updateStats();
+                updateTodayTasks();
+                updateChaptersGrid();
+            }
+        }
+
+        function updateAllTodayDisplay() {
+            const allChapters = getAllChapters();
+            const todayTasks = allChapters.filter(ch => 
+                !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate) > 0)
+            );
+            const overdueItems = allChapters.filter(ch => 
+                !ch.isCompleted && isOverdue(ch.nextReviewDate) > 0
+            );
+            const totalCompleted = physicsCompletedReviews + mathCompletedReviews + informaticsCompletedReviews;
+
+            document.getElementById('allTodayTasks').textContent = todayTasks.length;
+            document.getElementById('allOverdueItems').textContent = overdueItems.length;
+            document.getElementById('allTotalChapters').textContent = allChapters.length;
+            document.getElementById('allCompletedReviews').textContent = totalCompleted;
+
+            const todayTasksList = document.getElementById('allTodayTasksList');
+            
+            if (todayTasks.length === 0) {
+                todayTasksList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Bu gün üçün tapşırıq yoxdur! 🎉</h3>
+                        <p>Əla! Bu gün üçün bütün təkrarlarınızı tamamladınız.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            todayTasksList.innerHTML = todayTasks.map(chapter => `
+                <div class="task-item">
+                    <div class="task-info">
+                        <div class="task-name">Bölmə ${chapter.number}: ${chapter.name}</div>
+                        <div class="task-type">${getReviewTypeText(chapter.reviewLevel)} ${isOverdue(chapter.nextReviewDate) > 0 ? `(GECİKMİŞ ${isOverdue(chapter.nextReviewDate)} gün)` : ''}</div>
+                        <div class="task-subject">${getSubjectName(chapter.subject)}</div>
+                    </div>
+                    <button class="btn btn-success" onclick="completeReviewFromAll(${chapter.id}, '${chapter.subject}')">
+                        ✅ Tamamlandı
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function updateAllTomorrowDisplay() {
+            const allChapters = getAllChapters();
+            const tomorrowDate = new Date(simulatedCurrentDate);
+            tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+            
+            const tomorrowTasks = allChapters.filter(ch => 
+                !ch.isCompleted && isTomorrowTask(ch.nextReviewDate)
+            );
+            
+            const upcomingTasks = allChapters.filter(ch => 
+                !ch.isCompleted && new Date(ch.nextReviewDate) > tomorrowDate
+            );
+            
+            const totalCompleted = physicsCompletedReviews + mathCompletedReviews + informaticsCompletedReviews;
+
+            document.getElementById('allTomorrowTasks').textContent = tomorrowTasks.length;
+            document.getElementById('allUpcomingTasks').textContent = upcomingTasks.length;
+            document.getElementById('allTotalChapters2').textContent = allChapters.length;
+            document.getElementById('allCompletedReviews2').textContent = totalCompleted;
+
+            const tomorrowTasksList = document.getElementById('allTomorrowTasksList');
+            
+            if (tomorrowTasks.length === 0) {
+                tomorrowTasksList.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Sabah üçün tapşırıq yoxdur! 🎉</h3>
+                        <p>Sabah üçün heç bir təkrar planlanmayıb.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            tomorrowTasksList.innerHTML = tomorrowTasks.map(chapter => `
+                <div class="task-item">
+                    <div class="task-info">
+                        <div class="task-name">Bölmə ${chapter.number}: ${chapter.name}</div>
+                        <div class="task-type">${getReviewTypeText(chapter.reviewLevel)}</div>
+                        <div class="task-subject">${getSubjectName(chapter.subject)}</div>
+                    </div>
+                    <div style="color: white; font-weight: 600; opacity: 0.8;">
+                        Sabah
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getSubjectName(subject) {
+            switch(subject) {
+                case 'physics': return 'Fizika';
+                case 'math': return 'Riyaziyyat';
+                case 'informatics': return 'İnformatika';
+                default: return subject;
+            }
+        }
+
+        function completeReviewFromAll(chapterId, subject) {
+            let targetChapters;
+            switch(subject) {
+                case 'physics':
+                    targetChapters = physicsChapters;
+                    break;
+                case 'math':
+                    targetChapters = mathChapters;
+                    break;
+                case 'informatics':
+                    targetChapters = informaticsChapters;
+                    break;
+            }
+
+            const chapter = targetChapters.find(ch => ch.id === chapterId);
+            if (!chapter) return;
+            
+            chapter.lastReviewDate = simulatedCurrentDate.toISOString();
+            chapter.reviewLevel = Math.min(chapter.reviewLevel + 1, reviewIntervals.length);
+            
+            const nextDate = new Date(simulatedCurrentDate);
+            nextDate.setDate(nextDate.getDate() + reviewIntervals[chapter.reviewLevel - 1]);
+            chapter.nextReviewDate = nextDate.toISOString();
+            
+            if (chapter.reviewLevel === reviewIntervals.length) {
+                chapter.isCompleted = true;
+            }
+            
+            // Increment subject-specific completed reviews
+            switch(subject) {
+                case 'physics':
+                    physicsCompletedReviews++;
+                    break;
+                case 'math':
+                    mathCompletedReviews++;
+                    break;
+                case 'informatics':
+                    informaticsCompletedReviews++;
+                    break;
+            }
+            
+            saveData();
+            updateDisplay();
+        }
+
+        function isTomorrowTask(dateString) {
+            const date = new Date(dateString);
+            date.setHours(0, 0, 0, 0);
+            const tomorrow = new Date(simulatedCurrentDate);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            return date.getTime() === tomorrow.getTime();
         }
         
         function updateStats() {
@@ -797,7 +1070,7 @@
             const date = new Date(dateString);
             const day = date.getDate().toString().padStart(2, '0');
             const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const year = date.getFullYear(); // Use full 4-digit year
+            const year = date.getFullYear();
             return `${day}.${month}.${year}`;
         }
         
@@ -878,7 +1151,6 @@
             nextDate.setDate(nextDate.getDate() + reviewIntervals[chapter.reviewLevel - 1]);
             chapter.nextReviewDate = nextDate.toISOString();
             
-            // Only mark as completed when explicitly pressing the button at the final review stage
             if (chapter.reviewLevel === reviewIntervals.length) {
                 chapter.isCompleted = true;
             }
@@ -941,9 +1213,9 @@
             }
 
             const date = new Date(dateString);
-            date.setHours(0, 0, 0, 0); // Normalize to start of the day
+            date.setHours(0, 0, 0, 0);
             const simulatedDate = new Date(simulatedCurrentDate);
-            simulatedDate.setHours(0, 0, 0, 0); // Normalize to start of the day
+            simulatedDate.setHours(0, 0, 0, 0);
 
             const diffDays = Math.floor((date - simulatedDate) / (1000 * 60 * 60 * 24));
 
@@ -960,14 +1232,14 @@
         
         function isOverdue(dateString) {
             const date = new Date(dateString);
-            date.setHours(0, 0, 0, 0); // Normalize the date to start of the day
+            date.setHours(0, 0, 0, 0);
             const diffDays = Math.ceil((simulatedCurrentDate - date) / (1000 * 60 * 60 * 24));
             return diffDays > 0 ? diffDays : 0;
         }
 
         function isTodayTask(dateString) {
             const date = new Date(dateString);
-            date.setHours(0, 0, 0, 0); // Normalize the date to start of the day
+            date.setHours(0, 0, 0, 0);
             return date.getTime() === simulatedCurrentDate.getTime();
         }
         
@@ -977,17 +1249,15 @@
         }
 
         function formatCreationDate(dateString) {
-            if (!dateString) return 'Məlumat yoxdur'; // Handle cases where creationDate might be missing
+            if (!dateString) return 'Məlumat yoxdur';
             const date = new Date(dateString);
-            // Check for invalid date to prevent displaying "Invalid Date"
             if (isNaN(date.getTime())) {
                 return 'Yanlış Tarix';
             }
             
-            // Custom formatting to dd.mm.yyyy HH:mm
             const day = date.getDate().toString().padStart(2, '0');
             const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const year = date.getFullYear(); // Use full 4-digit year
+            const year = date.getFullYear();
             const hours = date.getHours().toString().padStart(2, '0');
             const minutes = date.getMinutes().toString().padStart(2, '0');
             
@@ -1036,53 +1306,31 @@
 
         function clearAllData() {
             // Show a confirmation dialog
-            const confirmClear = confirm(`DİQQƏT: ${getCurrentSubjectName()} fənni üçün bütün məlumatları silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz!`);
+            const confirmClear = confirm(`DİQQƏT: Bütün məlumatları silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz!`);
             
             if (confirmClear) {
-                // Clear localStorage for current subject
-                switch(currentSubject) {
-                    case 'physics':
-                        localStorage.removeItem('physicsChapters');
-                        localStorage.removeItem('physicsCompletedReviews');
-                        physicsChapters = [];
-                        physicsCompletedReviews = 0;
-                        break;
-                    case 'math':
-                        localStorage.removeItem('mathChapters');
-                        localStorage.removeItem('mathCompletedReviews');
-                        mathChapters = [];
-                        mathCompletedReviews = 0;
-                        break;
-                    case 'informatics':
-                        localStorage.removeItem('informaticsChapters');
-                        localStorage.removeItem('informaticsCompletedReviews');
-                        informaticsChapters = [];
-                        informaticsCompletedReviews = 0;
-                        break;
-                }
+                // Clear all data
+                localStorage.removeItem('physicsChapters');
+                localStorage.removeItem('physicsCompletedReviews');
+                localStorage.removeItem('mathChapters');
+                localStorage.removeItem('mathCompletedReviews');
+                localStorage.removeItem('informaticsChapters');
+                localStorage.removeItem('informaticsCompletedReviews');
                 
-                // Reset chapters for current subject
+                // Reset all variables
+                physicsChapters = [];
+                mathChapters = [];
+                informaticsChapters = [];
+                physicsCompletedReviews = 0;
+                mathCompletedReviews = 0;
+                informaticsCompletedReviews = 0;
                 chapters = [];
                 
                 // Update display to show empty state
                 updateDisplay();
                 
-                // Optional: Provide feedback
-                alert(`${getCurrentSubjectName()} fənni üçün bütün məlumatlar uğurla silindi.`);
-            }
-        }
-
-        // Helper function to get current subject name in Azerbaijani
-        function getCurrentSubjectName() {
-            switch(currentSubject) {
-                case 'physics':
-                    return 'Fizika';
-                case 'math':
-                    return 'Riyaziyyat';
-                case 'informatics':
-                    return 'İnformatika';
-                default:
-                    return 'Fənn';
+                // Provide feedback
+                alert(`Bütün məlumatlar uğurla silindi.`);
             }
         }
     </script>
