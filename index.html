@@ -294,78 +294,6 @@
             line-height: 1.6;
         }
 
-        .time-simulator {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 15px; /* Reduced padding */
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .time-simulator h2 {
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .simulator-controls {
-            display: flex;
-            flex-direction: column; /* Stack controls vertically */
-            gap: 10px;
-            align-items: stretch; /* Full width alignment */
-        }
-
-        .time-display {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .btn-simulator {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .btn-simulator:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .speed-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: stretch;
-        }
-
-        .speed-selector {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 14px;
-            width: 100%;
-        }
-
-        .speed-selector option {
-            background: #28a745;
-            color: white;
-        }
-
         /* Ensure touch targets are large enough */
         @media (max-width: 768px) {
             body {
@@ -390,10 +318,6 @@
 
             .simulator-controls {
                 align-items: stretch;
-            }
-
-            .time-simulator p {
-                font-size: 0.8rem;
             }
 
             .stat-number {
@@ -431,255 +355,322 @@
                 font-size: 1.3rem;
             }
         }
+
+        /* Tab Styles */
+        .tab-container {
+            display: flex;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .tab.active {
+            border-bottom-color: white;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .subject-content {
+            display: none;
+        }
+        
+        .subject-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧠 Fiziki Aralıqlı Təkrar Sistemi</h1>
+            <h1>🧠 Aralıqlı Təkrar Sistemi</h1>
             <p>Mövzularınızı unutmayın, uğurunuzu artırın!</p>
         </div>
         
+        <div class="tab-container">
+            <div class="tab active" data-subject="physics">Fizika</div>
+            <div class="tab" data-subject="math">Riyaziyyat</div>
+            <div class="tab" data-subject="informatics">İnformatika</div>
+        </div>
+        
         <div class="main-content">
-            <div class="controls">
-                <div class="input-group">
-                    <input type="text" id="chapterName" placeholder="Bölmənin adı (məs: Elektrostatika)">
-                    <input type="number" id="chapterNumber" placeholder="Bölmə №" min="1" max="20">
-                    <button class="btn btn-primary" onclick="addChapter()">Bölmə Əlavə Et</button>
-                </div>
-            </div>
-
-            <div class="time-simulator">
-                <h2>⏰ Zaman Simulyatoru - Test Rejimi</h2>
-                <div class="simulator-controls">
-                    <div class="time-display" id="simulatedDate">Bu gün: 4 Avqust 2025</div>
-                    <button class="btn-simulator" onclick="advanceTime(1)">+1 Gün</button>
-                    <button class="btn-simulator" onclick="advanceTime(7)">+1 Həftə</button>
-                    <button class="btn-simulator" onclick="advanceTime(30)">+1 Ay</button>
-                    <div class="speed-controls">
-                        <span>Avtomatik:</span>
-                        <select class="speed-selector" id="autoSpeed" onchange="setAutoAdvance()">
-                            <option value="0">Bağlı</option>
-                            <option value="1000">Sürətli (1s = 1gün)</option>
-                            <option value="2000">Orta (2s = 1gün)</option>
-                            <option value="5000">Yavaş (5s = 1gün)</option>
-                        </select>
+            <div id="physics-content" class="subject-content active">
+                <div class="controls">
+                    <div class="input-group">
+                        <input type="text" id="physicsChapterName" placeholder="Fizika bölmənin adı (məs: Elektrostatika)">
+                        <input type="number" id="physicsChapterNumber" placeholder="Bölmə №" min="1" max="20">
+                        <button class="btn btn-primary" onclick="addChapter('physics')">Bölmə Əlavə Et</button>
                     </div>
-                    <button class="btn-simulator" onclick="resetTime()">🔄 Bu günə qayıt</button>
                 </div>
-                <p style="opacity: 0.9; font-size: 0.95rem;">
-                    💡 Bu simulyator ilə zamanı irəli apararaq sistemin necə işlədiyini test edə bilərsiniz. 
-                    Həqiqi məlumatlarınız təsirlənməz, yalnız görünüş dəyişər.
-                </p>
-            </div>
 
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalChapters">0</div>
-                    <div class="stat-label">Toplam Bölmə</div>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="physicalTotalChapters">0</div>
+                        <div class="stat-label">Toplam Bölmə</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="physicsTodayTasks">0</div>
+                        <div class="stat-label">Bugünkü Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="physicsCompletedReviews">0</div>
+                        <div class="stat-label">Tamamlanmış Təkrarlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="physicsOverdueItems">0</div>
+                        <div class="stat-label">Gecikmiş Tapşırıqlar</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="todayTasks">0</div>
-                    <div class="stat-label">Bugünkü Tapşırıqlar</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="completedReviews">0</div>
-                    <div class="stat-label">Tamamlanmış Təkrarlar</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="overdueItems">0</div>
-                    <div class="stat-label">Gecikmiş Tapşırıqlar</div>
-                </div>
-            </div>
 
-            <div class="today-tasks" id="todaySection">
-                <h2>📅 Bugünkü Tapşırıqlarınız</h2>
-                <div class="task-list" id="todayTasksList">
+                <div class="today-tasks" id="physicsTodaySection">
+                    <h2>📅 Bugünkü Tapşırıqlarınız (Fizika)</h2>
+                    <div class="task-list" id="physicsTodayTasksList">
+                        <div class="empty-state">
+                            <h3>Bu gün üçün tapşırıq yoxdur! 🎉</h3>
+                            <p>Yeni bölmələr əlavə etdiyinizdə burada görünəcəklər.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapters-grid" id="physicsChaptersGrid">
                     <div class="empty-state">
-                        <h3>Bu gün üçün tapşırıq yoxdur! 🎉</h3>
-                        <p>Yeni bölmələr əlavə etdiyinizdə burada görünəcəklər.</p>
+                        <h3>Hələ bölmə əlavə edilməyib</h3>
+                        <p>Yuxarıdakı formu istifadə edərək ilk bölmənizi əlavə edin və aralıqlı təkrar sistemini başladın!</p>
                     </div>
                 </div>
             </div>
 
-            <div class="chapters-grid" id="chaptersGrid">
-                <div class="empty-state">
-                    <h3>Hələ bölmə əlavə edilməyib</h3>
-                    <p>Yuxarıdakı formu istifadə edərək ilk bölmənizi əlavə edin və aralıqlı təkrar sistemini başladın!</p>
+            <div id="math-content" class="subject-content">
+                <div class="controls">
+                    <div class="input-group">
+                        <input type="text" id="mathChapterName" placeholder="Riyaziyyat bölmənin adı (məs: Cəbr)">
+                        <input type="number" id="mathChapterNumber" placeholder="Bölmə №" min="1" max="20">
+                        <button class="btn btn-primary" onclick="addChapter('math')">Bölmə Əlavə Et</button>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="mathTotalChapters">0</div>
+                        <div class="stat-label">Toplam Bölmə</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="mathTodayTasks">0</div>
+                        <div class="stat-label">Bugünkü Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="mathCompletedReviews">0</div>
+                        <div class="stat-label">Tamamlanmış Təkrarlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="mathOverdueItems">0</div>
+                        <div class="stat-label">Gecikmiş Tapşırıqlar</div>
+                    </div>
+                </div>
+
+                <div class="today-tasks" id="mathTodaySection">
+                    <h2>📅 Bugünkü Tapşırıqlarınız (Riyaziyyat)</h2>
+                    <div class="task-list" id="mathTodayTasksList">
+                        <div class="empty-state">
+                            <h3>Bu gün üçün tapşırıq yoxdur! 🎉</h3>
+                            <p>Yeni bölmələr əlavə etdiyinizdə burada görünəcəklər.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapters-grid" id="mathChaptersGrid">
+                    <div class="empty-state">
+                        <h3>Hələ bölmə əlavə edilməyib</h3>
+                        <p>Yuxarıdakı formu istifadə edərək ilk bölmənizi əlavə edin və aralıqlı təkrar sistemini başladın!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="informatics-content" class="subject-content">
+                <div class="controls">
+                    <div class="input-group">
+                        <input type="text" id="informaticsChapterName" placeholder="İnformatika bölmənin adı (məs: Excel)">
+                        <input type="number" id="informaticsChapterNumber" placeholder="Bölmə №" min="1" max="20">
+                        <button class="btn btn-primary" onclick="addChapter('informatics')">Bölmə Əlavə Et</button>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="informaticsTotalChapters">0</div>
+                        <div class="stat-label">Toplam Bölmə</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="informaticsTodayTasks">0</div>
+                        <div class="stat-label">Bugünkü Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="informaticsCompletedReviews">0</div>
+                        <div class="stat-label">Tamamlanmış Təkrarlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="informaticsOverdueItems">0</div>
+                        <div class="stat-label">Gecikmiş Tapşırıqlar</div>
+                    </div>
+                </div>
+
+                <div class="today-tasks" id="informaticsTodaySection">
+                    <h2>📅 Bugünkü Tapşırıqlarınız (İnformatika)</h2>
+                    <div class="task-list" id="informaticsTodayTasksList">
+                        <div class="empty-state">
+                            <h3>Bu gün üçün tapşırıq yoxdur! 🎉</h3>
+                            <p>Yeni bölmələr əlavə etdiyinizdə burada görünəcəklər.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapters-grid" id="informaticsChaptersGrid">
+                    <div class="empty-state">
+                        <h3>Hələ bölmə əlavə edilməyib</h3>
+                        <p>Yuxarıdakı formu istifadə edərək ilk bölmənizi əlavə edin və aralıqlı təkrar sistemini başladın!</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let chapters = JSON.parse(localStorage.getItem('physicsChapters')) || [];
+        // Global variables for each subject
+        let physicsChapters = JSON.parse(localStorage.getItem('physicsChapters')) || [];
+        let mathChapters = JSON.parse(localStorage.getItem('mathChapters')) || [];
+        let informaticsChapters = JSON.parse(localStorage.getItem('informaticsChapters')) || [];
+        
+        let currentSubject = 'physics';
+        let chapters = physicsChapters;
+        
         let completedReviews = parseInt(localStorage.getItem('completedReviews')) || 0;
         let simulatedCurrentDate = new Date(); // Simulyasiya üçün tarix
-        let autoAdvanceInterval = null;
-
-        const reviewIntervals = [1, 3, 7, 14, 30]; // günlər
-
+        
+        const reviewIntervals = [3, 7, 14, 30, 60]; // günlər
+        
         const monthNames = [
             'Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'İyun',
             'İyul', 'Avqust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'
         ];
-
-        function updateSimulatedDateDisplay() {
-            const day = simulatedCurrentDate.getDate();
-            const month = monthNames[simulatedCurrentDate.getMonth()];
-            const year = simulatedCurrentDate.getFullYear();
-            document.getElementById('simulatedDate').textContent = `Bugün: ${day} ${month} ${year}`;
-        }
-
-        function advanceTime(days) {
-            simulatedCurrentDate.setDate(simulatedCurrentDate.getDate() + days);
-            updateSimulatedDateDisplay();
-            updateDisplay();
-        }
-
-        function resetTime() {
-            simulatedCurrentDate = new Date();
-            updateSimulatedDateDisplay();
-            updateDisplay();
-            if (autoAdvanceInterval) {
-                clearInterval(autoAdvanceInterval);
-                autoAdvanceInterval = null;
-                document.getElementById('autoSpeed').value = '0';
-            }
-        }
-
-        function setAutoAdvance() {
-            const speed = parseInt(document.getElementById('autoSpeed').value);
-            
-            if (autoAdvanceInterval) {
-                clearInterval(autoAdvanceInterval);
-                autoAdvanceInterval = null;
-            }
-            
-            if (speed > 0) {
-                autoAdvanceInterval = setInterval(() => {
-                    advanceTime(1);
-                }, speed);
-            }
-        }
-
+        
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.subject-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                this.classList.add('active');
+                const subject = this.getAttribute('data-subject');
+                document.getElementById(`${subject}-content`).classList.add('active');
+                
+                // Update current subject and chapters
+                currentSubject = subject;
+                switch(subject) {
+                    case 'physics':
+                        chapters = physicsChapters;
+                        break;
+                    case 'math':
+                        chapters = mathChapters;
+                        break;
+                    case 'informatics':
+                        chapters = informaticsChapters;
+                        break;
+                }
+                
+                // Refresh display
+                updateDisplay();
+            });
+        });
+        
         function saveData() {
-            localStorage.setItem('physicsChapters', JSON.stringify(chapters));
+            switch(currentSubject) {
+                case 'physics':
+                    localStorage.setItem('physicsChapters', JSON.stringify(physicsChapters));
+                    break;
+                case 'math':
+                    localStorage.setItem('mathChapters', JSON.stringify(mathChapters));
+                    break;
+                case 'informatics':
+                    localStorage.setItem('informaticsChapters', JSON.stringify(informaticsChapters));
+                    break;
+            }
             localStorage.setItem('completedReviews', completedReviews);
         }
-
-        function addChapter() {
-            const name = document.getElementById('chapterName').value.trim();
-            const number = parseInt(document.getElementById('chapterNumber').value);
-
-            if (!name || !number) {
+        
+        function addChapter(subject) {
+            const nameInputId = `${subject}ChapterName`;
+            const numberInputId = `${subject}ChapterNumber`;
+            const chapterName = document.getElementById(nameInputId).value.trim();
+            const chapterNumber = parseInt(document.getElementById(numberInputId).value);
+            
+            let subjectChapters;
+            switch(subject) {
+                case 'physics':
+                    subjectChapters = physicsChapters;
+                    break;
+                case 'math':
+                    subjectChapters = mathChapters;
+                    break;
+                case 'informatics':
+                    subjectChapters = informaticsChapters;
+                    break;
+            }
+            
+            if (!chapterName || !chapterNumber) {
                 alert('Zəhmət olmasa, bölmənin adını və nömrəsini daxil edin!');
                 return;
             }
-
-            if (chapters.find(ch => ch.number === number)) {
+            
+            if (subjectChapters.find(ch => ch.number === chapterNumber)) {
                 alert('Bu nömrədə bölmə artıq mövcuddur!');
                 return;
             }
-
+            
             const newChapter = {
                 id: Date.now(),
-                name: name,
-                number: number,
+                name: chapterName,
+                number: chapterNumber,
                 addedDate: simulatedCurrentDate.toISOString(),
                 reviewLevel: 0,
                 nextReviewDate: simulatedCurrentDate.toISOString(),
                 lastReviewDate: null,
                 isCompleted: false
             };
-
-            chapters.push(newChapter);
-            chapters.sort((a, b) => a.number - b.number);
             
-            document.getElementById('chapterName').value = '';
-            document.getElementById('chapterNumber').value = '';
+            subjectChapters.push(newChapter);
+            subjectChapters.sort((a, b) => a.number - b.number);
+            
+            document.getElementById(nameInputId).value = '';
+            document.getElementById(numberInputId).value = '';
+            
+            // Update current chapters if the subject matches
+            if (currentSubject === subject) {
+                chapters = subjectChapters;
+            }
             
             saveData();
             updateDisplay();
         }
-
-        function completeReview(chapterId) {
-            const chapter = chapters.find(ch => ch.id === chapterId);
-            if (!chapter) return;
-
-            chapter.lastReviewDate = simulatedCurrentDate.toISOString();
-            chapter.reviewLevel = Math.min(chapter.reviewLevel + 1, reviewIntervals.length - 1);
-            
-            const nextDate = new Date(simulatedCurrentDate);
-            nextDate.setDate(nextDate.getDate() + reviewIntervals[chapter.reviewLevel]);
-            chapter.nextReviewDate = nextDate.toISOString();
-
-            if (chapter.reviewLevel >= reviewIntervals.length - 1) {
-                chapter.isCompleted = true;
-            }
-
-            completedReviews++;
-            saveData();
-            updateDisplay();
-        }
-
-        function resetChapter(chapterId) {
-            const chapter = chapters.find(ch => ch.id === chapterId);
-            if (!chapter) return;
-
-            chapter.reviewLevel = 0;
-            chapter.nextReviewDate = simulatedCurrentDate.toISOString();
-            chapter.lastReviewDate = null;
-            chapter.isCompleted = false;
-
-            saveData();
-            updateDisplay();
-        }
-
-        function deleteChapter(chapterId) {
-            if (confirm('Bu bölməni silmək istədiyinizdən əminsiniz?')) {
-                chapters = chapters.filter(ch => ch.id !== chapterId);
-                saveData();
-                updateDisplay();
-            }
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const diffDays = Math.ceil((date - simulatedCurrentDate) / (1000 * 60 * 60 * 24));
-            
-            if (diffDays < 0) {
-                return `${Math.abs(diffDays)} gün gecikmiş`;
-            } else if (diffDays === 0) {
-                return 'Bu gün';
-            } else if (diffDays === 1) {
-                return 'Sabah';
-            } else {
-                return `${diffDays} gün sonra`;
-            }
-        }
-
-        function isOverdue(dateString) {
-            const date = new Date(dateString);
-            return date < simulatedCurrentDate;
-        }
-
-        function isTodayTask(dateString) {
-            const date = new Date(dateString);
-            return date.toDateString() === simulatedCurrentDate.toDateString();
-        }
-
-        function getReviewTypeText(level) {
-            const types = ['İlk Təkrar', '2. Təkrar', '3. Təkrar', '4. Təkrar', 'Son Təkrar'];
-            return types[level] || 'Tamamlandı';
-        }
-
+        
         function updateDisplay() {
             updateStats();
             updateTodayTasks();
             updateChaptersGrid();
         }
-
+        
         function updateStats() {
             const todayTasks = chapters.filter(ch => 
                 !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate))
@@ -688,19 +679,42 @@
             const overdueItems = chapters.filter(ch => 
                 !ch.isCompleted && isOverdue(ch.nextReviewDate)
             ).length;
-
-            document.getElementById('totalChapters').textContent = chapters.length;
-            document.getElementById('todayTasks').textContent = todayTasks;
-            document.getElementById('completedReviews').textContent = completedReviews;
-            document.getElementById('overdueItems').textContent = overdueItems;
+            
+            const statsMap = {
+                'physics': {
+                    totalChapters: 'physicalTotalChapters',
+                    todayTasks: 'physicsTodayTasks',
+                    completedReviews: 'physicsCompletedReviews',
+                    overdueItems: 'physicsOverdueItems'
+                },
+                'math': {
+                    totalChapters: 'mathTotalChapters',
+                    todayTasks: 'mathTodayTasks',
+                    completedReviews: 'mathCompletedReviews',
+                    overdueItems: 'mathOverdueItems'
+                },
+                'informatics': {
+                    totalChapters: 'informaticsTotalChapters',
+                    todayTasks: 'informaticsTodayTasks',
+                    completedReviews: 'informaticsCompletedReviews',
+                    overdueItems: 'informaticsOverdueItems'
+                }
+            };
+            
+            const stats = statsMap[currentSubject];
+            document.getElementById(stats.totalChapters).textContent = chapters.length;
+            document.getElementById(stats.todayTasks).textContent = todayTasks;
+            document.getElementById(stats.completedReviews).textContent = completedReviews;
+            document.getElementById(stats.overdueItems).textContent = overdueItems;
         }
-
+        
         function updateTodayTasks() {
-            const todayTasksList = document.getElementById('todayTasksList');
+            const todayTasksListId = `${currentSubject}TodayTasksList`;
+            const todayTasksList = document.getElementById(todayTasksListId);
             const todayTasks = chapters.filter(ch => 
                 !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate))
             );
-
+            
             if (todayTasks.length === 0) {
                 todayTasksList.innerHTML = `
                     <div class="empty-state">
@@ -710,7 +724,7 @@
                 `;
                 return;
             }
-
+            
             todayTasksList.innerHTML = todayTasks.map(chapter => `
                 <div class="task-item">
                     <div class="task-info">
@@ -723,9 +737,10 @@
                 </div>
             `).join('');
         }
-
+        
         function updateChaptersGrid() {
-            const chaptersGrid = document.getElementById('chaptersGrid');
+            const chaptersGridId = `${currentSubject}ChaptersGrid`;
+            const chaptersGrid = document.getElementById(chaptersGridId);
             
             if (chapters.length === 0) {
                 chaptersGrid.innerHTML = `
@@ -736,12 +751,12 @@
                 `;
                 return;
             }
-
+            
             chaptersGrid.innerHTML = chapters.map(chapter => {
                 const nextReviewText = formatDate(chapter.nextReviewDate);
                 const isOverdueChapter = isOverdue(chapter.nextReviewDate);
-                const progressPercent = (chapter.reviewLevel / (reviewIntervals.length - 1)) * 100;
-
+                const progressPercent = chapter.reviewLevel * 20;
+                
                 return `
                     <div class="chapter-card">
                         <div class="chapter-header">
@@ -760,15 +775,12 @@
                                 </span>
                             </div>
                             <div class="status-item">
-                                <span class="status-label">İrəliləyiş:</span>
+                                <span class="status-label">Hazırki İrəliləyiş:</span>
                                 <span class="status-value">${Math.round(progressPercent)}%</span>
                             </div>
                             ${chapter.isCompleted ? 
                                 '<div style="text-align: center; color: #28a745; font-weight: bold; margin-top: 10px;">✅ Tamamlandı</div>' : 
                                 `<div style="display: flex; gap: 10px; margin-top: 15px;">
-                                    <button class="btn btn-success" style="flex: 1; font-size: 14px;" onclick="completeReview(${chapter.id})">
-                                        Təkrar Et
-                                    </button>
                                     <button class="btn" style="background: #6c757d; color: white; font-size: 14px;" onclick="resetChapter(${chapter.id})">
                                         Sıfırla
                                     </button>
@@ -782,22 +794,132 @@
                 `;
             }).join('');
         }
-
+        
+        function completeReview(chapterId) {
+            const chapter = chapters.find(ch => ch.id === chapterId);
+            if (!chapter) return;
+            
+            chapter.lastReviewDate = simulatedCurrentDate.toISOString();
+            chapter.reviewLevel = Math.min(chapter.reviewLevel + 1, reviewIntervals.length);
+            
+            const nextDate = new Date(simulatedCurrentDate);
+            nextDate.setDate(nextDate.getDate() + reviewIntervals[chapter.reviewLevel - 1]);
+            chapter.nextReviewDate = nextDate.toISOString();
+            
+            // Only mark as completed when explicitly pressing the button at the final review stage
+            if (chapter.reviewLevel === reviewIntervals.length) {
+                chapter.isCompleted = true;
+            }
+            
+            completedReviews++;
+            saveData();
+            updateDisplay();
+        }
+        
+        function resetChapter(chapterId) {
+            const chapter = chapters.find(ch => ch.id === chapterId);
+            if (!chapter) return;
+            
+            chapter.reviewLevel = 0;
+            chapter.nextReviewDate = simulatedCurrentDate.toISOString();
+            chapter.lastReviewDate = null;
+            chapter.isCompleted = false;
+            
+            saveData();
+            updateDisplay();
+        }
+        
+        function deleteChapter(chapterId) {
+            if (confirm('Bu bölməni silmək istədiyinizdən əminsiniz?')) {
+                chapters = chapters.filter(ch => ch.id !== chapterId);
+                
+                switch(currentSubject) {
+                    case 'physics':
+                        physicsChapters = chapters;
+                        break;
+                    case 'math':
+                        mathChapters = chapters;
+                        break;
+                    case 'informatics':
+                        informaticsChapters = chapters;
+                        break;
+                }
+                
+                saveData();
+                updateDisplay();
+            }
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const diffDays = Math.ceil((date - simulatedCurrentDate) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 0) {
+                return `${Math.abs(diffDays)} gün gecikmiş`;
+            } else if (diffDays === 0) {
+                return 'Bu gün';
+            } else if (diffDays === 1) {
+                return 'Sabah';
+            } else if (diffDays === 60) {
+                return 'Tamamlandı';
+            } else {
+                return `${diffDays} gün sonra`;
+            }
+        }
+        
+        function isOverdue(dateString) {
+            const date = new Date(dateString);
+            return date < simulatedCurrentDate;
+        }
+        
+        function isTodayTask(dateString) {
+            const date = new Date(dateString);
+            return date.toDateString() === simulatedCurrentDate.toDateString();
+        }
+        
+        function getReviewTypeText(level) {
+            const types = ['İlk Təkrar', '2. Təkrar', '3. Təkrar', '4. Təkrar', 'Tamamlandı'];
+            return types[level - 1] || 'Öyrənildi';
+        }
+        
         // Enter tuşu ile bölüm ekleme
-        document.getElementById('chapterName').addEventListener('keypress', function(e) {
+        document.getElementById('physicsChapterName').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                addChapter();
+                addChapter('physics');
             }
         });
-
-        document.getElementById('chapterNumber').addEventListener('keypress', function(e) {
+        
+        document.getElementById('physicsChapterNumber').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                addChapter();
+                addChapter('physics');
             }
         });
-
+        
+        document.getElementById('mathChapterName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addChapter('math');
+            }
+        });
+        
+        document.getElementById('mathChapterNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addChapter('math');
+            }
+        });
+        
+        document.getElementById('informaticsChapterName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addChapter('informatics');
+            }
+        });
+        
+        document.getElementById('informaticsChapterNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addChapter('informatics');
+            }
+        });
+        
         // Sayfa yüklendiğinde verileri göster
-        updateSimulatedDateDisplay();
         updateDisplay();
     </script>
 </body>
