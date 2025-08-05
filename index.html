@@ -960,9 +960,7 @@
                         <div class="task-type">${getReviewTypeText(chapter.reviewLevel)} ${isOverdue(chapter.nextReviewDate) > 0 ? `(GECİKMİŞ ${isOverdue(chapter.nextReviewDate)} gün)` : ''}</div>
                         <div class="task-subject">${getSubjectName(chapter.subject)}</div>
                     </div>
-                    <button class="btn btn-success" onclick="completeReviewFromAll(${chapter.id}, '${chapter.subject}')">
-                        ✅ Tamamlandı
-                    </button>
+                    <input type="checkbox" onchange="completeReviewFromAll(${chapter.id}, '${chapter.subject}')" style="width: 20px; height: 20px;">
                 </div>
             `).join('');
         }
@@ -1148,10 +1146,9 @@
                     <div class="task-info">
                         <div class="task-name">Bölmə ${chapter.number}: ${chapter.name}</div>
                         <div class="task-type">${getReviewTypeText(chapter.reviewLevel)} ${isOverdue(chapter.nextReviewDate) > 0 ? `(GECİKMİŞ ${isOverdue(chapter.nextReviewDate)} gün)` : ''}</div>
+                        <div class="task-subject">${getSubjectName(chapter.subject)}</div>
                     </div>
-                    <button class="btn btn-success" onclick="completeReview(${chapter.id})">
-                        ✅ Tamamlandı
-                    </button>
+                    <input type="checkbox" onchange="completeReview(${chapter.id})" style="width: 20px; height: 20px;">
                 </div>
             `).join('');
         }
