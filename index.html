@@ -545,11 +545,41 @@
         </div>
     </div>
 
+    <!-- Footer with Clear Data Button -->
+    <footer style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        margin-top: 20px;
+    ">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <h3 style="margin-bottom: 15px;">🔄 Məlumatları Sıfırlama</h3>
+            <p style="opacity: 0.9; margin-bottom: 20px; line-height: 1.6;">
+                Bu düymə bütün yaddaşda saxlanılan məlumatları (bölmələr, təkrarlar, statistika) tam olaraq siləcəkdir. 
+                Diqqət: Bu əməliyyat geri qaytarıla bilməz. Bütün irəliləyişiniz itiriləcəkdir.
+            </p>
+            <button class="btn" onclick="clearAllData()" style="
+                background: #dc3545; 
+                color: white; 
+                font-weight: bold;
+                transition: all 0.3s;
+            " onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                🗑️ Bütün Məlumatları Sil
+            </button>
+        </div>
+    </footer>
+
     <script>
         // Global variables for each subject
         let physicsChapters = JSON.parse(localStorage.getItem('physicsChapters')) || [];
         let mathChapters = JSON.parse(localStorage.getItem('mathChapters')) || [];
         let informaticsChapters = JSON.parse(localStorage.getItem('informaticsChapters')) || [];
+
+        // Track completed reviews per subject
+        let physicsCompletedReviews = parseInt(localStorage.getItem('physicsCompletedReviews')) || 0;
+        let mathCompletedReviews = parseInt(localStorage.getItem('mathCompletedReviews')) || 0;
+        let informaticsCompletedReviews = parseInt(localStorage.getItem('informaticsCompletedReviews')) || 0;
 
         // Initialize creationDate for old entries if missing
         [physicsChapters, mathChapters, informaticsChapters].forEach(chapterList => {
@@ -563,7 +593,6 @@
         let currentSubject = 'physics';
         let chapters = physicsChapters;
         
-        let completedReviews = parseInt(localStorage.getItem('completedReviews')) || 0;
         let simulatedCurrentDate = new Date(); // Simulyasiya üçün tarix
         simulatedCurrentDate.setHours(0, 0, 0, 0); // Set to start of the day
         
@@ -609,15 +638,17 @@
             switch(currentSubject) {
                 case 'physics':
                     localStorage.setItem('physicsChapters', JSON.stringify(physicsChapters));
+                    localStorage.setItem('physicsCompletedReviews', physicsCompletedReviews);
                     break;
                 case 'math':
                     localStorage.setItem('mathChapters', JSON.stringify(mathChapters));
+                    localStorage.setItem('mathCompletedReviews', mathCompletedReviews);
                     break;
                 case 'informatics':
                     localStorage.setItem('informaticsChapters', JSON.stringify(informaticsChapters));
+                    localStorage.setItem('informaticsCompletedReviews', informaticsCompletedReviews);
                     break;
             }
-            localStorage.setItem('completedReviews', completedReviews);
         }
         
         function addChapter(subject) {
@@ -715,7 +746,20 @@
             const stats = statsMap[currentSubject];
             document.getElementById(stats.totalChapters).textContent = chapters.length;
             document.getElementById(stats.todayTasks).textContent = todayTasks;
-            document.getElementById(stats.completedReviews).textContent = completedReviews;
+            
+            // Use subject-specific completed reviews
+            switch(currentSubject) {
+                case 'physics':
+                    document.getElementById(stats.completedReviews).textContent = physicsCompletedReviews;
+                    break;
+                case 'math':
+                    document.getElementById(stats.completedReviews).textContent = mathCompletedReviews;
+                    break;
+                case 'informatics':
+                    document.getElementById(stats.completedReviews).textContent = informaticsCompletedReviews;
+                    break;
+            }
+            
             document.getElementById(stats.overdueItems).textContent = overdueItems;
         }
         
@@ -839,7 +883,19 @@
                 chapter.isCompleted = true;
             }
             
-            completedReviews++;
+            // Increment subject-specific completed reviews
+            switch(currentSubject) {
+                case 'physics':
+                    physicsCompletedReviews++;
+                    break;
+                case 'math':
+                    mathCompletedReviews++;
+                    break;
+                case 'informatics':
+                    informaticsCompletedReviews++;
+                    break;
+            }
+            
             saveData();
             updateDisplay();
         }
@@ -977,6 +1033,45 @@
         
         // Sayfa yüklendiğinde verileri göster
         updateDisplay();
+
+        function clearAllData() {
+            // Show a confirmation dialog
+            const confirmClear = confirm('DİQQƏT: Bütün məlumatları silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz!');
+            
+            if (confirmClear) {
+                // Clear localStorage for all subjects
+                localStorage.removeItem('physicsChapters');
+                localStorage.removeItem('mathChapters');
+                localStorage.removeItem('informaticsChapters');
+                
+                // Clear completed reviews for each subject
+                localStorage.removeItem('physicsCompletedReviews');
+                localStorage.removeItem('mathCompletedReviews');
+                localStorage.removeItem('informaticsCompletedReviews');
+                
+                // Reset in-memory variables
+                physicsChapters = [];
+                mathChapters = [];
+                informaticsChapters = [];
+                
+                physicsCompletedReviews = 0;
+                mathCompletedReviews = 0;
+                informaticsCompletedReviews = 0;
+                
+                // Reset current subject to physics
+                currentSubject = 'physics';
+                chapters = physicsChapters;
+                
+                // Update display to show empty state
+                updateDisplay();
+                
+                // Optional: Provide feedback
+                alert('Bütün məlumatlar uğurla silindi. Səhifə yenidən yüklənir...');
+                
+                // Optional: Reload the page to ensure a clean state
+                location.reload();
+            }
+        }
     </script>
 </body>
 </html>
