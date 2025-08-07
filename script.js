@@ -158,12 +158,21 @@ function updateDisplay() {
 
 function updateAllTodayDisplay() {
     const allChapters = getAllChapters();
-    const todayTasks = allChapters.filter(ch => 
-        !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate) > 0)
-    );
-    const overdueItems = allChapters.filter(ch => 
-        !ch.isCompleted && isOverdue(ch.nextReviewDate) > 0
-    );
+    const todayTasks = [];
+    const overdueItems = [];
+
+    allChapters.forEach(ch => {
+        if (!ch.isCompleted) {
+            const overdueDays = isOverdue(ch.nextReviewDate);
+            if (isTodayTask(ch.nextReviewDate) || overdueDays > 0) {
+                todayTasks.push(ch);
+            }
+            if (overdueDays > 0) {
+                overdueItems.push(ch);
+            }
+        }
+    });
+
     const totalCompleted = physicsCompletedReviews + mathCompletedReviews + informaticsCompletedReviews;
 
     document.getElementById('allTodayTasks').textContent = todayTasks.length;
@@ -172,7 +181,8 @@ function updateAllTodayDisplay() {
     document.getElementById('allCompletedReviews').textContent = totalCompleted;
 
     const todayTasksList = document.getElementById('allTodayTasksList');
-    
+    todayTasksList.innerHTML = ''; // Clear existing list
+
     if (todayTasks.length === 0) {
         todayTasksList.innerHTML = `
             <div class="empty-state">
@@ -182,41 +192,40 @@ function updateAllTodayDisplay() {
         `;
         return;
     }
-    
-    todayTasksList.innerHTML = todayTasks.map(chapter => `
-        <div class="task-item">
+
+    const fragment = document.createDocumentFragment();
+    todayTasks.forEach(chapter => {
+        const taskItem = document.createElement('div');
+        taskItem.className = 'task-item';
+        const overdueDays = isOverdue(chapter.nextReviewDate);
+        taskItem.innerHTML = `
             <div class="task-info">
                 <div class="task-name">Bölmə ${chapter.number}: ${chapter.name}</div>
-                <div class="task-type">${getReviewTypeText(chapter.reviewLevel)} ${isOverdue(chapter.nextReviewDate) > 0 ? `(GECİKMİŞ ${isOverdue(chapter.nextReviewDate)} gün)` : ''}</div>
+                <div class="task-type">${getReviewTypeText(chapter.reviewLevel)} ${overdueDays > 0 ? `(GECİKMİŞ ${overdueDays} gün)` : ''}</div>
                 <div class="task-subject">${getSubjectName(chapter.subject)}</div>
             </div>
             <input type="checkbox" onchange="completeReviewFromAll(${chapter.id}, '${chapter.subject}')" style="width: 20px; height: 20px;">
-        </div>
-    `).join('');
+        `;
+        fragment.appendChild(taskItem);
+    });
+    todayTasksList.appendChild(fragment);
 }
 
 function updateAllTomorrowDisplay() {
     const allChapters = getAllChapters();
     const tomorrowDate = new Date(simulatedCurrentDate);
     tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-    
+    const tomorrowDateString = tomorrowDate.toDateString();
+
     const tomorrowTasks = allChapters.filter(ch => 
-        !ch.isCompleted && isTomorrowTask(ch.nextReviewDate)
+        !ch.isCompleted && new Date(ch.nextReviewDate).toDateString() === tomorrowDateString
     );
-    
-    const upcomingTasks = allChapters.filter(ch => 
-        !ch.isCompleted && new Date(ch.nextReviewDate) > tomorrowDate
-    );
-    
-    const totalCompleted = physicsCompletedReviews + mathCompletedReviews + informaticsCompletedReviews;
 
     document.getElementById('allTomorrowTasks').textContent = tomorrowTasks.length;
-    document.getElementById('allUpcomingTasks').textContent = upcomingTasks.length;
-    document.getElementById('allTotalChapters2').textContent = allChapters.length;
-    document.getElementById('allCompletedReviews2').textContent = totalCompleted;
 
     const tomorrowTasksList = document.getElementById('allTomorrowTasksList');
-    
+    tomorrowTasksList.innerHTML = ''; // Clear existing list
+
     if (tomorrowTasks.length === 0) {
         tomorrowTasksList.innerHTML = `
             <div class="empty-state">
@@ -226,19 +235,21 @@ function updateAllTomorrowDisplay() {
         `;
         return;
     }
-    
-    tomorrowTasksList.innerHTML = tomorrowTasks.map(chapter => `
-        <div class="task-item">
+
+    const fragment = document.createDocumentFragment();
+    tomorrowTasks.forEach(chapter => {
+        const taskItem = document.createElement('div');
+        taskItem.className = 'task-item';
+        taskItem.innerHTML = `
             <div class="task-info">
                 <div class="task-name">Bölmə ${chapter.number}: ${chapter.name}</div>
                 <div class="task-type">${getReviewTypeText(chapter.reviewLevel)}</div>
                 <div class="task-subject">${getSubjectName(chapter.subject)}</div>
             </div>
-            <div style="color: white; font-weight: 600; opacity: 0.8;">
-                Sabah
-            </div>
-        </div>
-    `).join('');
+        `;
+        fragment.appendChild(taskItem);
+    });
+    tomorrowTasksList.appendChild(fragment);
 }
 
 function getSubjectName(subject) {
