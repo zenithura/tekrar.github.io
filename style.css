@@ -457,17 +457,21 @@ footer {
     left: 0;
 }
 
-.pricing-card .btn-purchase {
+.pricing-card .btn-purchase, a.btn-purchase {
+    display: inline-block;
     width: 100%;
     padding: 12px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    color: white !important; /* Ensure color overrides default link color */
     border: none;
     border-radius: 6px;
     font-size: 16px;
     cursor: pointer;
     transition: transform 0.2s;
     font-weight: 600;
+    text-decoration: none !important; /* Ensure underline is removed */
+    text-align: center;
+    box-sizing: border-box; /* Ensure padding doesn't break layout */
 }
 
 .pricing-card .btn-purchase:hover {
@@ -480,12 +484,6 @@ footer {
     color: #777;
     margin-top: 20px;
     margin-bottom: 20px;
-}
-
-a.btn-purchase {
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
 }
 
 /* Info Container Styles */
