@@ -6,17 +6,48 @@ const API_BASE_URL = 'https://pythonapi256.pythonanywhere.com/'; // Production A
 
 // Login durumunu kontrol et ve koruma sağla
 function protectPage() {
+    const token = localStorage.getItem('licenseToken');
     const isLoggedIn = localStorage.getItem('isLoggedIn');
 
-    // Eğer kullanıcı 'isLoggedIn' durumu 'true' değilse, giriş sayfasına yönlendir.
-    // Bu kontrol, sayfa her yenilendiğinde sunucuya gitmek yerine
-    // tarayıcıda yerel olarak yapılır, bu da hızlı ve güvenilirdir.
-    if (isLoggedIn !== 'true') {
-        // Tutarsızlığı önlemek için tüm giriş verilerini temizle
+    // 1. İyimser Yerel Kontrol: Sayfayı hızlıca yükle.
+    // Kullanıcıyı bekletmeden, tarayıcıdaki verilere güvenerek anında erişim ver.
+    // Bu, hızlı yenilemelerde atılma sorununu tamamen çözer.
+    if (!token || isLoggedIn !== 'true') {
         clearLoginData();
         window.location.href = 'index.html';
+        return; // Erişimi engelle ve fonksiyonu durdur.
     }
-    // 'isLoggedIn' durumu 'true' ise, kullanıcının sayfada kalmasına izin verilir.
+
+    // 2. Arka Planda Sunucu Doğrulaması (Asenkron ve Sessiz)
+    // Sayfa yüklendikten sonra, arka planda sunucu ile token'ı doğrula.
+    // Bu işlem kullanıcıyı engellemez.
+    verifyTokenOnServer(token);
+}
+
+async function verifyTokenOnServer(token) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/verify_token`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token: token })
+        });
+
+        const data = await response.json();
+
+        // Eğer sunucu token'ın geçersiz olduğunu söylerse, o zaman logout yap.
+        if (!data.valid) {
+            clearLoginData();
+            window.location.href = 'index.html';
+        }
+        // Token geçerliyse hiçbir şey yapma, kullanıcı oturumuna devam eder.
+
+    } catch (error) {
+        // Ağ hatası durumunda kullanıcıyı atmak, kötü bir deneyim olabilir.
+        // Bu yüzden sadece konsola hata yazdırıyoruz.
+        console.error('Arka plan token doğrulama hatası:', error);
+    }
 }
 
 // Login verilerini temizle
