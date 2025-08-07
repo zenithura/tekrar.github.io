@@ -161,10 +161,16 @@ function updateAllTodayDisplay() {
     const todayTasks = [];
     const overdueItems = [];
 
+    const todayTimestamp = simulatedCurrentDate.getTime();
+
     allChapters.forEach(ch => {
         if (!ch.isCompleted) {
-            const overdueDays = isOverdue(ch.nextReviewDate);
-            if (isTodayTask(ch.nextReviewDate) || overdueDays > 0) {
+            const reviewDate = new Date(ch.nextReviewDate);
+            reviewDate.setHours(0, 0, 0, 0);
+            const reviewTimestamp = reviewDate.getTime();
+            const overdueDays = Math.ceil((todayTimestamp - reviewTimestamp) / (1000 * 60 * 60 * 24));
+
+            if (reviewTimestamp <= todayTimestamp) {
                 todayTasks.push(ch);
             }
             if (overdueDays > 0) {
@@ -217,9 +223,13 @@ function updateAllTomorrowDisplay() {
     tomorrowDate.setDate(tomorrowDate.getDate() + 1);
     const tomorrowDateString = tomorrowDate.toDateString();
 
-    const tomorrowTasks = allChapters.filter(ch => 
-        !ch.isCompleted && new Date(ch.nextReviewDate).toDateString() === tomorrowDateString
-    );
+    const tomorrowTimestamp = tomorrowDate.getTime();
+    const tomorrowTasks = allChapters.filter(ch => {
+        if (ch.isCompleted) return false;
+        const reviewDate = new Date(ch.nextReviewDate);
+        reviewDate.setHours(0, 0, 0, 0);
+        return reviewDate.getTime() === tomorrowTimestamp;
+    });
 
     document.getElementById('allTomorrowTasks').textContent = tomorrowTasks.length;
 
@@ -367,9 +377,13 @@ function updateTodayTasks() {
     const todayTasksList = document.getElementById(todayTasksListId);
     if (!todayTasksList) return; // Exit if element doesn't exist for the current view
     
-    const todayTasks = chapters.filter(ch => 
-        !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate) > 0)
-    );
+    const todayTimestamp = simulatedCurrentDate.getTime();
+    const todayTasks = chapters.filter(ch => {
+        if (ch.isCompleted) return false;
+        const reviewDate = new Date(ch.nextReviewDate);
+        reviewDate.setHours(0, 0, 0, 0);
+        return reviewDate.getTime() <= todayTimestamp;
+    });
     
     if (todayTasks.length === 0) {
         todayTasksList.innerHTML = `
