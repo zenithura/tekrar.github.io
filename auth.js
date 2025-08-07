@@ -2,7 +2,7 @@
 // Bu dosya main.html'de kullanılacak
 
 // API base URL - Deployed backend URL
-const API_BASE_URL = 'https://tekrar-backend.onrender.com'; // Production API URL
+const API_BASE_URL = 'https://pythonapi256.pythonanywhere.com/'; // Production API URL
 
 // Login durumunu kontrol et ve koruma sağla
 async function protectPage() {
