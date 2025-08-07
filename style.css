@@ -397,6 +397,51 @@ footer {
     transform: translateY(-3px);
 }
 
+/* Styles for Editable Subject Tabs */
+.tab {
+    position: relative; /* For positioning the edit button */
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    gap: 8px; /* Space between name and button */
+}
+
+.subject-name {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.edit-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem; /* Adjust icon size */
+    padding: 5px;
+    line-height: 1;
+    color: inherit; /* Inherit color from parent (.tab) */
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.edit-btn:hover {
+    opacity: 1;
+}
+
+
+
+/* Style for the input field during editing */
+.subject-name-input {
+    width: 100%;
+    padding: 4px;
+    border: 1px solid #667eea;
+    border-radius: 4px;
+    font-size: inherit;
+    font-family: inherit;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+}
+
 /* Pricing Card Styles */
 .pricing-container {
     max-width: 400px;

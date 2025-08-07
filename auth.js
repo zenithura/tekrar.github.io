@@ -5,44 +5,18 @@
 const API_BASE_URL = 'https://pythonapi256.pythonanywhere.com/'; // Production API URL
 
 // Login durumunu kontrol et ve koruma sağla
-async function protectPage() {
-    const token = localStorage.getItem('licenseToken');
+function protectPage() {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
-    
-    if (!token || isLoggedIn !== 'true') {
-        // Login olmamış, login sayfasına yönlendir
-        window.location.href = 'index.html';
-        return false;
-    }
-    
-    // Token'ı doğrula
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/verify_token`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token: token })
-        });
-        
-        const data = await response.json();
-        
-        if (data.status === 'success' && data.valid) {
-            // Token geçerli, sayfaya erişim izni var
-            return true;
-        } else {
-            // Token geçersiz, login verilerini temizle ve login sayfasına yönlendir
-            clearLoginData();
-            window.location.href = 'index.html';
-            return false;
-        }
-    } catch (error) {
-        console.error('Token doğrulama hatası:', error);
-        // Hata durumunda da login sayfasına yönlendir
+
+    // Eğer kullanıcı 'isLoggedIn' durumu 'true' değilse, giriş sayfasına yönlendir.
+    // Bu kontrol, sayfa her yenilendiğinde sunucuya gitmek yerine
+    // tarayıcıda yerel olarak yapılır, bu da hızlı ve güvenilirdir.
+    if (isLoggedIn !== 'true') {
+        // Tutarsızlığı önlemek için tüm giriş verilerini temizle
         clearLoginData();
         window.location.href = 'index.html';
-        return false;
     }
+    // 'isLoggedIn' durumu 'true' ise, kullanıcının sayfada kalmasına izin verilir.
 }
 
 // Login verilerini temizle

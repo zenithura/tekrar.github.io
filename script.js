@@ -1,3 +1,10 @@
+// Store custom subject names
+let subjectNames = JSON.parse(localStorage.getItem('subjectNames')) || {
+    physics: 'Fizika',
+    math: 'Riyaziyyat',
+    informatics: 'İnformatika'
+};
+
 // Global variables for each subject
 let physicsChapters = JSON.parse(localStorage.getItem('physicsChapters')) || [];
 let mathChapters = JSON.parse(localStorage.getItem('mathChapters')) || [];
@@ -235,12 +242,7 @@ function updateAllTomorrowDisplay() {
 }
 
 function getSubjectName(subject) {
-    switch(subject) {
-        case 'physics': return 'Fizika';
-        case 'math': return 'Riyaziyyat';
-        case 'informatics': return 'İnformatika';
-        default: return subject;
-    }
+    return subjectNames[subject] || subject;
 }
 
 function completeReviewFromAll(chapterId, subject) {
@@ -599,14 +601,85 @@ document.getElementById('informaticsChapterNumber').addEventListener('keypress',
     if (e.key === 'Enter') addChapter('informatics');
 });
 
-// Initial display on page load
-document.addEventListener('DOMContentLoaded', () => {
-    // Select the default tab content
-    document.getElementById('today-all-content').classList.add('active');
-    chapters = getAllChapters();
-    updateDisplay();
-});
+// Function to save subject names to localStorage
+function saveSubjectNames() {
+    localStorage.setItem('subjectNames', JSON.stringify(subjectNames));
+}
 
+// Function to handle subject name editing
+function initializeEditButtons() {
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent tab switching
+
+            const tab = this.closest('.tab');
+            const subject = tab.getAttribute('data-subject');
+            const nameSpan = tab.querySelector('.subject-name');
+            const currentName = nameSpan.textContent;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.className = 'subject-name-input';
+
+            nameSpan.replaceWith(input);
+            input.focus();
+
+            let saved = false; // Flag to prevent double execution
+            const saveName = () => {
+                if (saved) return; // If already saved, do nothing
+                saved = true;
+
+                const newName = input.value.trim();
+                if (newName && newName !== currentName) {
+                    subjectNames[subject] = newName;
+                    saveSubjectNames();
+                }
+
+                const newNameSpan = document.createElement('span');
+                newNameSpan.className = 'subject-name';
+                newNameSpan.textContent = newName || currentName;
+
+                input.replaceWith(newNameSpan);
+                updateDisplay(); // Refresh UI to show new name everywhere
+            };
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    saveName();
+                }
+            });
+
+            input.addEventListener('blur', saveName);
+        });
+    });
+}
+
+// Apply stored subject names to tabs on load
+function applyInitialSubjectNames() {
+    document.querySelectorAll('.tab[data-subject]').forEach(tab => {
+        const subject = tab.getAttribute('data-subject');
+        if (subjectNames[subject]) {
+            const nameSpan = tab.querySelector('.subject-name');
+            if (nameSpan) {
+                nameSpan.textContent = subjectNames[subject];
+            }
+        }
+    });
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    applyInitialSubjectNames();
+    initializeEditButtons();
+
+    // Set the default tab to 'today-all'
+    const defaultTab = document.querySelector('.tab[data-subject="today-all"]');
+    if (defaultTab) {
+        defaultTab.click();
+    }
+    updateDisplay(); // Initial display update
+});
 
 // Modal functions
 function clearAllData() {
