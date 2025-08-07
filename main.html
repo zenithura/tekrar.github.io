@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiziki Aralıqlı Təkrar Sistemi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Aralıqlı Təkrar Sistemi</h1>
+            <p>Mövzularınızı unutmayın, uğurunuzu artırın!</p>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab-row subject-tabs">
+                <div class="tab" data-subject="physics">Fizika</div>
+                <div class="tab" data-subject="math">Riyaziyyat</div>
+                <div class="tab" data-subject="informatics">İnformatika</div>
+            </div>
+            <div class="tab-row time-tabs">
+                <div class="tab active" data-subject="today-all">Bugün</div>
+                <div class="tab" data-subject="tomorrow-all">Sabah</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Today's Tasks Across All Subjects -->
+            <div id="today-all-content" class="subject-content active">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="allTodayTasks">0</div>
+                        <div class="stat-label">Bu Günkü Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allOverdueItems">0</div>
+                        <div class="stat-label">Gecikmiş Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allTotalChapters">0</div>
+                        <div class="stat-label">Toplam Bölmələr</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allCompletedReviews">0</div>
+                        <div class="stat-label">Toplam Təkrarlar</div>
+                    </div>
+                </div>
+
+                <div class="today-tasks">
+                    <h2>📅 Bugünkü Bütün Tapşırıqlarınız</h2>
+                    <div class="task-list" id="allTodayTasksList">
+                        <div class="empty-state">
+                            <h3>Bu gün üçün tapşırıq yoxdur! 🎉</h3>
+                            <p>Əla! Bu gün üçün bütün təkrarlarınızı tamamladınız.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tomorrow's Tasks Across All Subjects -->
+            <div id="tomorrow-all-content" class="subject-content">
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="allTomorrowTasks">0</div>
+                        <div class="stat-label">Sabahkı Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allUpcomingTasks">0</div>
+                        <div class="stat-label">Gələcək Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allTotalChapters2">0</div>
+                        <div class="stat-label">Toplam Bölmələr</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="allCompletedReviews2">0</div>
+                        <div class="stat-label">Toplam Təkrarlar</div>
+                    </div>
+                </div>
+
+                <div class="today-tasks">
+                    <h2>📅 Sabahkı Bütün Tapşırıqlarınız</h2>
+                    <div class="task-list" id="allTomorrowTasksList">
+                        <div class="empty-state">
+                            <h3>Sabah üçün tapşırıq yoxdur! 🎉</h3>
+                            <p>Sabah üçün heç bir təkrar planlanmayıb.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Physics Content -->
+            <div id="physics-content" class="subject-content">
+                <div class="controls">
+                    <div class="input-group">
+                        <input type="text" id="physicsChapterName" placeholder="Fizika bölmənin adı (məs: Elektrostatika)">
+                        <input type="number" id="physicsChapterNumber" placeholder="Bölmə №" min="1" max="20">
+                        <button class="btn btn-primary" onclick="addChapter('physics')">Bölmə Əlavə Et</button>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="physicalTotalChapters">0</div>
+                        <div class="stat-label">Toplam Bölmə</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="physicsTodayTasks">0</div>
+                        <div class="stat-label">Bugünkü Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="physicsCompletedReviews">0</div>
+                        <div class="stat-label">Tamamlanmış Təkrarlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="physicsOverdueItems">0</div>
+                        <div class="stat-label">Gecikmiş Tapşırıqlar</div>
+                    </div>
+                </div>
+
+                <div class="today-tasks" id="physicsTodaySection">
+                    <h2>📅 Bugünkü Tapşırıqlarınız (Fizika)</h2>
+                    <div class="task-list" id="physicsTodayTasksList">
+                        <div class="empty-state">
+                            <h3>Bu gün üçün tapşırıq yoxdur! 🎉</h3>
+                            <p>Yeni bölmələr əlavə etdiyinizdə burada görünəcəklər.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapters-grid" id="physicsChaptersGrid">
+                    <div class="empty-state">
+                        <h3>Hələ bölmə əlavə edilməyib</h3>
+                        <p>Yuxarıdakı formu istifadə edərək ilk bölmənizi əlavə edin və aralıqlı təkrar sistemini başladın!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Math Content -->
+            <div id="math-content" class="subject-content">
+                <div class="controls">
+                    <div class="input-group">
+                        <input type="text" id="mathChapterName" placeholder="Riyaziyyat bölmənin adı (məs: Cəbr)">
+                        <input type="number" id="mathChapterNumber" placeholder="Bölmə №" min="1" max="20">
+                        <button class="btn btn-primary" onclick="addChapter('math')">Bölmə Əlavə Et</button>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="mathTotalChapters">0</div>
+                        <div class="stat-label">Toplam Bölmə</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="mathTodayTasks">0</div>
+                        <div class="stat-label">Bugünkü Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="mathCompletedReviews">0</div>
+                        <div class="stat-label">Tamamlanmış Təkrarlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="mathOverdueItems">0</div>
+                        <div class="stat-label">Gecikmiş Tapşırıqlar</div>
+                    </div>
+                </div>
+
+                <div class="today-tasks" id="mathTodaySection">
+                    <h2>📅 Bugünkü Tapşırıqlarınız (Riyaziyyat)</h2>
+                    <div class="task-list" id="mathTodayTasksList">
+                        <div class="empty-state">
+                            <h3>Bu gün üçün tapşırıq yoxdur! 🎉</h3>
+                            <p>Yeni bölmələr əlavə etdiyinizdə burada görünəcəklər.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapters-grid" id="mathChaptersGrid">
+                    <div class="empty-state">
+                        <h3>Hələ bölmə əlavə edilməyib</h3>
+                        <p>Yuxarıdakı formu istifadə edərək ilk bölmənizi əlavə edin və aralıqlı təkrar sistemini başladın!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informatics Content -->
+            <div id="informatics-content" class="subject-content">
+                <div class="controls">
+                    <div class="input-group">
+                        <input type="text" id="informaticsChapterName" placeholder="İnformatika bölmənin adı (məs: Excel)">
+                        <input type="number" id="informaticsChapterNumber" placeholder="Bölmə №" min="1" max="20">
+                        <button class="btn btn-primary" onclick="addChapter('informatics')">Bölmə Əlavə Et</button>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="informaticsTotalChapters">0</div>
+                        <div class="stat-label">Toplam Bölmə</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="informaticsTodayTasks">0</div>
+                        <div class="stat-label">Bugünkü Tapşırıqlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="informaticsCompletedReviews">0</div>
+                        <div class="stat-label">Tamamlanmış Təkrarlar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="informaticsOverdueItems">0</div>
+                        <div class="stat-label">Gecikmiş Tapşırıqlar</div>
+                    </div>
+                </div>
+
+                <div class="today-tasks" id="informaticsTodaySection">
+                    <h2>📅 Bugünkü Tapşırıqlarınız (İnformatika)</h2>
+                    <div class="task-list" id="informaticsTodayTasksList">
+                        <div class="empty-state">
+                            <h3>Bu gün üçün tapşırıq yoxdur! 🎉</h3>
+                            <p>Yeni bölmələr əlavə etdiyinizdə burada görünəcəklər.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chapters-grid" id="informaticsChaptersGrid">
+                    <div class="empty-state">
+                        <h3>Hələ bölmə əlavə edilməyib</h3>
+                        <p>Yuxarıdakı formu istifadə edərək ilk bölmənizi əlavə edin və aralıqlı təkrar sistemini başladın!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer with Clear Data Button -->
+    <footer>
+        <div style="max-width: 600px; margin: 0 auto;">
+            <h3 style="margin-bottom: 15px;">🔄 Məlumatları Sıfırlama</h3>
+            <p style="opacity: 0.9; margin-bottom: 20px; line-height: 1.6;">
+                Bu düymə yaddaşda saxlanılan məlumatları (bölmələr, təkrarlar, statistika) seçərək silməyə imkan verir. 
+                Diqqət: Bu əməliyyat geri qaytarıla bilməz. Seçdiyiniz bölmələrin irəliləyişi itiriləcəkdir.
+            </p>
+            <button class="btn btn-clear-footer" onclick="clearAllData()">
+                🗑️ Məlumatları Sil
+            </button>
+        </div>
+    </footer>
+
+    <!-- Data Clearing Modal -->
+    <div id="clearDataModal" class="modal">
+        <div class="modal-content">
+            <h3>🗑️ Məlumatları Silmə Seçimi</h3>
+            <p>Hansı məlumatları silmək istəyirsiniz?</p>
+            
+            <label>
+                <input type="checkbox" name="clearSubject" value="physics"> Fizika Bölmələri
+            </label>
+            <label>
+                <input type="checkbox" name="clearSubject" value="math"> Riyaziyyat Bölmələri
+            </label>
+            <label>
+                <input type="checkbox" name="clearSubject" value="informatics"> İnformatika Bölmələri
+            </label>
+            <label>
+                <input type="checkbox" id="clearAllSubjects"> Bütün Bölmələri Sil
+            </label>
+            
+            <div class="modal-buttons">
+                <button class="btn btn-cancel" onclick="closeClearDataModal()">Ləğv Et</button>
+                <button class="btn btn-clear" onclick="confirmClearSelectedData()">Seçilmiş Məlumatları Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
