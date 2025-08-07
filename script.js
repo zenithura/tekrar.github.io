@@ -158,27 +158,12 @@ function updateDisplay() {
 
 function updateAllTodayDisplay() {
     const allChapters = getAllChapters();
-    const todayTasks = [];
-    const overdueItems = [];
-
-    const todayTimestamp = simulatedCurrentDate.getTime();
-
-    allChapters.forEach(ch => {
-        if (!ch.isCompleted) {
-            const reviewDate = new Date(ch.nextReviewDate);
-            reviewDate.setHours(0, 0, 0, 0);
-            const reviewTimestamp = reviewDate.getTime();
-            const overdueDays = Math.ceil((todayTimestamp - reviewTimestamp) / (1000 * 60 * 60 * 24));
-
-            if (reviewTimestamp <= todayTimestamp) {
-                todayTasks.push(ch);
-            }
-            if (overdueDays > 0) {
-                overdueItems.push(ch);
-            }
-        }
-    });
-
+    const todayTasks = allChapters.filter(ch => 
+        !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate) > 0)
+    );
+    const overdueItems = allChapters.filter(ch => 
+        !ch.isCompleted && isOverdue(ch.nextReviewDate) > 0
+    );
     const totalCompleted = physicsCompletedReviews + mathCompletedReviews + informaticsCompletedReviews;
 
     document.getElementById('allTodayTasks').textContent = todayTasks.length;
@@ -187,8 +172,7 @@ function updateAllTodayDisplay() {
     document.getElementById('allCompletedReviews').textContent = totalCompleted;
 
     const todayTasksList = document.getElementById('allTodayTasksList');
-    todayTasksList.innerHTML = ''; // Clear existing list
-
+    
     if (todayTasks.length === 0) {
         todayTasksList.innerHTML = `
             <div class="empty-state">
@@ -198,44 +182,41 @@ function updateAllTodayDisplay() {
         `;
         return;
     }
-
-    const fragment = document.createDocumentFragment();
-    todayTasks.forEach(chapter => {
-        const taskItem = document.createElement('div');
-        taskItem.className = 'task-item';
-        const overdueDays = isOverdue(chapter.nextReviewDate);
-        taskItem.innerHTML = `
+    
+    todayTasksList.innerHTML = todayTasks.map(chapter => `
+        <div class="task-item">
             <div class="task-info">
                 <div class="task-name">Bölmə ${chapter.number}: ${chapter.name}</div>
-                <div class="task-type">${getReviewTypeText(chapter.reviewLevel)} ${overdueDays > 0 ? `(GECİKMİŞ ${overdueDays} gün)` : ''}</div>
+                <div class="task-type">${getReviewTypeText(chapter.reviewLevel)} ${isOverdue(chapter.nextReviewDate) > 0 ? `(GECİKMİŞ ${isOverdue(chapter.nextReviewDate)} gün)` : ''}</div>
                 <div class="task-subject">${getSubjectName(chapter.subject)}</div>
             </div>
             <input type="checkbox" onchange="completeReviewFromAll(${chapter.id}, '${chapter.subject}')" style="width: 20px; height: 20px;">
-        `;
-        fragment.appendChild(taskItem);
-    });
-    todayTasksList.appendChild(fragment);
+        </div>
+    `).join('');
 }
 
 function updateAllTomorrowDisplay() {
     const allChapters = getAllChapters();
     const tomorrowDate = new Date(simulatedCurrentDate);
     tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-    const tomorrowDateString = tomorrowDate.toDateString();
-
-    const tomorrowTimestamp = tomorrowDate.getTime();
-    const tomorrowTasks = allChapters.filter(ch => {
-        if (ch.isCompleted) return false;
-        const reviewDate = new Date(ch.nextReviewDate);
-        reviewDate.setHours(0, 0, 0, 0);
-        return reviewDate.getTime() === tomorrowTimestamp;
-    });
+    
+    const tomorrowTasks = allChapters.filter(ch => 
+        !ch.isCompleted && isTomorrowTask(ch.nextReviewDate)
+    );
+    
+    const upcomingTasks = allChapters.filter(ch => 
+        !ch.isCompleted && new Date(ch.nextReviewDate) > tomorrowDate
+    );
+    
+    const totalCompleted = physicsCompletedReviews + mathCompletedReviews + informaticsCompletedReviews;
 
     document.getElementById('allTomorrowTasks').textContent = tomorrowTasks.length;
+    document.getElementById('allUpcomingTasks').textContent = upcomingTasks.length;
+    document.getElementById('allTotalChapters2').textContent = allChapters.length;
+    document.getElementById('allCompletedReviews2').textContent = totalCompleted;
 
     const tomorrowTasksList = document.getElementById('allTomorrowTasksList');
-    tomorrowTasksList.innerHTML = ''; // Clear existing list
-
+    
     if (tomorrowTasks.length === 0) {
         tomorrowTasksList.innerHTML = `
             <div class="empty-state">
@@ -245,21 +226,19 @@ function updateAllTomorrowDisplay() {
         `;
         return;
     }
-
-    const fragment = document.createDocumentFragment();
-    tomorrowTasks.forEach(chapter => {
-        const taskItem = document.createElement('div');
-        taskItem.className = 'task-item';
-        taskItem.innerHTML = `
+    
+    tomorrowTasksList.innerHTML = tomorrowTasks.map(chapter => `
+        <div class="task-item">
             <div class="task-info">
                 <div class="task-name">Bölmə ${chapter.number}: ${chapter.name}</div>
                 <div class="task-type">${getReviewTypeText(chapter.reviewLevel)}</div>
                 <div class="task-subject">${getSubjectName(chapter.subject)}</div>
             </div>
-        `;
-        fragment.appendChild(taskItem);
-    });
-    tomorrowTasksList.appendChild(fragment);
+            <div style="color: white; font-weight: 600; opacity: 0.8;">
+                Sabah
+            </div>
+        </div>
+    `).join('');
 }
 
 function getSubjectName(subject) {
@@ -377,13 +356,9 @@ function updateTodayTasks() {
     const todayTasksList = document.getElementById(todayTasksListId);
     if (!todayTasksList) return; // Exit if element doesn't exist for the current view
     
-    const todayTimestamp = simulatedCurrentDate.getTime();
-    const todayTasks = chapters.filter(ch => {
-        if (ch.isCompleted) return false;
-        const reviewDate = new Date(ch.nextReviewDate);
-        reviewDate.setHours(0, 0, 0, 0);
-        return reviewDate.getTime() <= todayTimestamp;
-    });
+    const todayTasks = chapters.filter(ch => 
+        !ch.isCompleted && (isTodayTask(ch.nextReviewDate) || isOverdue(ch.nextReviewDate) > 0)
+    );
     
     if (todayTasks.length === 0) {
         todayTasksList.innerHTML = `
