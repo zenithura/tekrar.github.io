@@ -1,8 +1,8 @@
 // Authentication kontrolü için ayrı dosya
 // Bu dosya main.html'de kullanılacak
 
-// API base URL - Bu URL'yi kendi API sunucunuzun adresiyle değiştirin
-const API_BASE_URL = 'http://localhost:5000'; // Geliştirme için localhost, production'da gerçek API URL'si
+// API base URL - Deployed backend URL
+const API_BASE_URL = 'https://tekrar-backend.onrender.com'; // Production API URL
 
 // Login durumunu kontrol et ve koruma sağla
 async function protectPage() {
