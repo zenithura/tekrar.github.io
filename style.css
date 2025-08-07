@@ -475,6 +475,19 @@ footer {
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
+.purchase-note {
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+a.btn-purchase {
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
 /* Info Container Styles */
 .info-container {
     display: flex;
